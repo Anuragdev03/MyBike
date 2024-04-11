@@ -11,6 +11,8 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.facebook.react.shell.MainReactPackage;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -20,6 +22,8 @@ class MainApplication : Application(), ReactApplication {
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
               // add(MyReactNativePackage())
+              add(MainReactPackage())
+              add(VectorIconsPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

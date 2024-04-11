@@ -1,7 +1,8 @@
 export const Colors = {
     primary: "#9246FF",
     black: "#000",
-    white: "#FFFFFF"
+    white: "#FFFFFF",
+    red: "#fc0505"
 }
 
 export const fontFamily = {

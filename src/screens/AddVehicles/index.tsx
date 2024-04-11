@@ -4,14 +4,22 @@ import { IconButton } from 'react-native-paper';
 import FontAwesome from "react-native-vector-icons/FontAwesome6"
 import { bikeIcon, carIcon } from "../../assets";
 import { screenNames } from "../../../screenNames";
+import { VehiclesRecordRealmContext } from "../../modals";
 
-const screenWidth = Dimensions.get("screen").width
+const screenWidth = Dimensions.get("screen").width;
+
+const { useRealm } = VehiclesRecordRealmContext;
+
 
 interface Props {
     navigation: any
 }
 
 export default function AddVehicles(props: Props) {
+    const realm = useRealm();
+
+    const vehicleData = realm.objects("VehiclesRecord")
+    console.log(vehicleData)
 
     const addButton = () => (
         <View style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: 80, alignItems: "center" }}>
@@ -61,13 +69,13 @@ export default function AddVehicles(props: Props) {
             <View>
                 <Text style={styles.textStyle}>Add/Select Vehicle</Text>
                 <View style={styles.buttonWrapper}>
-                    {addButton()}
                     {vehicleButton("Bike", "CB300R")}
                     {vehicleButton("Car", "Civic")}
                 </View>
-
-
             </View>
+                <View style={{position: "absolute", bottom: 20, right: 20}}>
+                    {addButton()}
+                </View>
         </SafeAreaView>
     )
 }

@@ -1,13 +1,41 @@
 import {Realm} from '@realm/react'
 
-export class VehiclesRecord extends Realm.Object {
-    id!: Realm.BSON.ObjectId;;
-    vehicleName!: string;
-    avatar!: string;
-    brandName!: string;
-    type!: string;
+class VehiclesRecord extends Realm.Object<VehiclesRecord> {
+	_id!: Realm.BSON.ObjectId;
 
-    constructor(realm: Realm, id: string, vehicleName: string, avatar: string, brandName: string, type: string) {
-        super(realm, id, vehicleName, avatar, brandName, type)
-    }
+	vehicleName!: string;
+
+	brandName!: string;
+
+	vehicleType!: Date;
+
+	createdAt!: Date;
+
+	updatedAt?: Date;
+
+	static generate(vehicleName: string, brandName: string, vehicleType: Date, createdAt?: Date) {
+		return {
+			_id: new Realm.BSON.ObjectId(),
+			vehicleName,
+			vehicleType,
+			brandName,
+			createdAt: createdAt || new Date(),
+			updatedAt: new Date(),
+		};
+	}
+
+	static schema: Realm.ObjectSchema = {
+		name: 'VehiclesRecord',
+		properties: {
+			_id: 'objectId',
+			vehicleName: 'string',
+			brandName: 'string',
+			vehicleType: 'date',
+			createdAt: 'date',
+			updatedAt: 'date?',
+		},
+		primaryKey: '_id',
+	};
 }
+
+export default VehiclesRecord;

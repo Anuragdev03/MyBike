@@ -15,6 +15,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { screenNames } from './screenNames';
 
+//Database
+import { VehiclesRecordRealmContext } from './src/modals';
+
 // Screens 
 import SplashScreen from './src/screens/SplashScreen';
 import AddVehicles from './src/screens/AddVehicles';
@@ -30,37 +33,40 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const { RealmProvider } = VehiclesRecordRealmContext;
   return (
     <SafeAreaProvider style={backgroundStyle}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={screenNames.splashScreen}
-          screenOptions={{
-            gestureDirection: "horizontal",
-            gestureEnabled: true,
-            animation: "slide_from_right",
-            animationDuration: .5
-          }}
-        >
-          <Stack.Screen
-            name={screenNames.splashScreen}
-            component={SplashScreen}
-            options={{ headerShown: false }}
-          />
+      <RealmProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName={screenNames.splashScreen}
+            screenOptions={{
+              gestureDirection: "horizontal",
+              gestureEnabled: true,
+              animation: "slide_from_right",
+              animationDuration: .5
+            }}
+          >
+            <Stack.Screen
+              name={screenNames.splashScreen}
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name={screenNames.addVehicleScreen}
-            component={AddVehicles}
-            options={{ headerShown: false }}
-          />
+            <Stack.Screen
+              name={screenNames.addVehicleScreen}
+              component={AddVehicles}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name={screenNames.addVehicleForm}
-            component={AddVehicleForm}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen
+              name={screenNames.addVehicleForm}
+              component={AddVehicleForm}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RealmProvider>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
