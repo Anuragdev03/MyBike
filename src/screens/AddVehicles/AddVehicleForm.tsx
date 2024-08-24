@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Header from "../../components/Header";
 import { useForm } from "react-hook-form";
 import CustomInput from "../../components/CustomInput";
@@ -6,6 +6,8 @@ import DropDown from "../../components/Dropdown";
 import { useState } from "react";
 import CustomButton from "../../components/Button";
 import { VehiclesRecordRealmContext } from "../../modals/index";
+import { screenNames } from "../../../screenNames";
+import { Realm } from '@realm/react'
 
 const { useRealm } = VehiclesRecordRealmContext;
 interface Props {
@@ -28,16 +30,22 @@ export default function AddVehicleForm(props: Props) {
     }
 
     function createRecord(data: any) {
-        console.log(data)
-        if(!vehicleTypeValue) return;
+        if (!vehicleTypeValue) return;
 
-        realm.write(() => {
-            realm.create("VehiclesRecord",{
-                vehicleName: data?.vehicleName,
-                brandName: data?.brandName,
-                vehicleType: vehicleTypeValue,
+        try {
+            realm.write(() => {
+                realm.create("VehiclesRecord", {
+                    vehicleName: data?.vehicleName,
+                    brandName: data?.brandName,
+                    vehicleType: vehicleTypeValue,
+                    _id: new Realm.BSON.ObjectId(),
+                    createdAt: new Date()
+                })
             })
-        })
+            props.navigation.navigate(screenNames.addVehicleScreen)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const vehicleType = [
@@ -47,7 +55,7 @@ export default function AddVehicleForm(props: Props) {
     ]
     return (
         <View>
-            <Header title="Add Vehicle Details" onBackPress={handleBack} />
+            <Header title="Add Vehicle Details" onBackPress={handleBack} showBackIcon />
 
             <View style={styles.wrapper}>
                 <CustomInput
@@ -72,7 +80,7 @@ export default function AddVehicleForm(props: Props) {
                     handleValueChange={handleVehicleTypeValueChange}
                 />
 
-                <View style={{display: "flex", flexDirection: "row", gap: 8, justifyContent: "center"}}>
+                <View style={{ display: "flex", flexDirection: "row", gap: 8, justifyContent: "center" }}>
                     <CustomButton
                         text="Cancel"
                         onPress={handleBack}

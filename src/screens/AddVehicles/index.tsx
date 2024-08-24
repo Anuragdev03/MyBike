@@ -1,25 +1,51 @@
-import { View, SafeAreaView, StyleSheet, Text, Alert, Dimensions } from "react-native";
+import { View, SafeAreaView, StyleSheet, Text, Alert, Dimensions, FlatList } from "react-native";
 import { Colors, fontFamily } from "../../helpers/constants";
 import { IconButton } from 'react-native-paper';
 import FontAwesome from "react-native-vector-icons/FontAwesome6"
 import { bikeIcon, carIcon } from "../../assets";
 import { screenNames } from "../../../screenNames";
 import { VehiclesRecordRealmContext } from "../../modals";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get("screen").width;
+const screenHeight = Dimensions.get("screen").height
 
 const { useRealm } = VehiclesRecordRealmContext;
-
 
 interface Props {
     navigation: any
 }
 
+interface VehiclesRecordType {
+    _id: any;
+    vehicleName: string;
+	brandName: string;
+	vehicleType: VehicleType;
+}
+
+type VehicleType = "Car" | "Bike" | "Other";
+  
+  
 export default function AddVehicles(props: Props) {
     const realm = useRealm();
+    const [vehicleData, setVehicleData] = useState<any>([]);
 
-    const vehicleData = realm.objects("VehiclesRecord")
-    console.log(vehicleData)
+
+    useFocusEffect(
+        useCallback(() => {
+            const data = realm.objects("VehiclesRecord")
+            setVehicleData(data)
+        }, [])
+    );
+
+    function navigateToDashboard(data:any) {
+        data = JSON.stringify(data)
+        AsyncStorage.setItem("selectedVehicle", data)
+        props.navigation.navigate("Main")
+    }
+
 
     const addButton = () => (
         <View style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: 80, alignItems: "center" }}>
@@ -28,7 +54,7 @@ export default function AddVehicles(props: Props) {
                     icon={({ color, size }) => (
                         <FontAwesome name="plus" color={color} size={size} />
                     )}
-                    size={40}
+                    size={30}
                     iconColor={Colors.primary}
                     style={styles.addButton}
                     onPress={() => {
@@ -42,7 +68,7 @@ export default function AddVehicles(props: Props) {
         </View>
     )
 
-    const vehicleButton = (type: "Car" | "Bike", name: string) => {
+    const vehicleButton = (type: VehicleType, name: string, data:any) => {
         let icon = type === "Car" ? carIcon : bikeIcon;
 
         return (
@@ -54,12 +80,12 @@ export default function AddVehicles(props: Props) {
                         iconColor={Colors.primary}
                         style={styles.addButton}
                         onPress={() => {
-                            Alert.alert("hi")
+                            navigateToDashboard(data)
                         }}
                     />
                 </View>
                 <View>
-                    <Text style={{ color: "#fff", fontFamily: fontFamily.nunitoMedium, textAlign: "center", margin: 0, padding: 0 }}>{name}</Text>
+                    <Text style={{ color: "#fff", fontFamily: fontFamily.nunitoMedium, textAlign: "center", margin: 0, padding: 0 }} ellipsizeMode="tail" numberOfLines={1}>{name}</Text>
                 </View>
             </View>
         )
@@ -69,13 +95,23 @@ export default function AddVehicles(props: Props) {
             <View>
                 <Text style={styles.textStyle}>Add/Select Vehicle</Text>
                 <View style={styles.buttonWrapper}>
-                    {vehicleButton("Bike", "CB300R")}
-                    {vehicleButton("Car", "Civic")}
+                    <FlatList
+                        data={vehicleData}
+                        renderItem={(({item}: any) => (
+                            <>
+                                {vehicleButton(item.vehicleType, item.vehicleName, item)}
+                            </>
+                        ))}
+                        keyExtractor={(item:any) => item._id.toString()}
+                        numColumns={4}
+                        style={{height: 500}}
+                        contentContainerStyle={{ maxHeight: screenHeight - 200, flex:1}}
+                    />
                 </View>
             </View>
-                <View style={{position: "absolute", bottom: 20, right: 20}}>
-                    {addButton()}
-                </View>
+            <View style={{ position: "absolute", bottom: 20, right: 20 }}>
+                {addButton()}
+            </View>
         </SafeAreaView>
     )
 }
@@ -107,6 +143,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         width: screenWidth - 50,
-        marginTop: 20
+        marginTop: 20,
     }
 })

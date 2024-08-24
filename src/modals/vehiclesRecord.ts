@@ -7,22 +7,11 @@ class VehiclesRecord extends Realm.Object<VehiclesRecord> {
 
 	brandName!: string;
 
-	vehicleType!: Date;
+	vehicleType!: string;
 
-	createdAt!: Date;
+	createdAt?: Date;
 
 	updatedAt?: Date;
-
-	static generate(vehicleName: string, brandName: string, vehicleType: Date, createdAt?: Date) {
-		return {
-			_id: new Realm.BSON.ObjectId(),
-			vehicleName,
-			vehicleType,
-			brandName,
-			createdAt: createdAt || new Date(),
-			updatedAt: new Date(),
-		};
-	}
 
 	static schema: Realm.ObjectSchema = {
 		name: 'VehiclesRecord',
@@ -30,7 +19,7 @@ class VehiclesRecord extends Realm.Object<VehiclesRecord> {
 			_id: 'objectId',
 			vehicleName: 'string',
 			brandName: 'string',
-			vehicleType: 'date',
+			vehicleType: 'string',
 			createdAt: 'date',
 			updatedAt: 'date?',
 		},

@@ -6,18 +6,19 @@ import { IconButton } from "react-native-paper";
 // Types
 interface Props {
     title: string;
-    onBackPress: () => void
+    onBackPress?: () => void;
+    showBackIcon: boolean;
 }
 export default function Header(props: Props) {
-    const { title, onBackPress } = props;
+    const { title, onBackPress, showBackIcon } = props;
 
     return (
         <View style={styles.container}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: 30, justifyContent: "center"}}>
-                <IconButton onPress={onBackPress} style={styles.backIcon} icon={() => (
+                {showBackIcon &&<IconButton onPress={onBackPress} style={styles.backIcon} icon={() => (
                     <FontAwesome name="arrow-left" color={"#fff"} size={25} />
                 )}
-                />
+                />}
                 <Text style={styles.textStyle}>{title}</Text>
             </View>
         </View>

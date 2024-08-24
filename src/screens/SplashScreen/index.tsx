@@ -11,9 +11,8 @@ export default function SplashScreen(props: Props) {
     useEffect(() => {
         setTimeout(() => {
             props.navigation.navigate(screenNames.addVehicleScreen)
-        }, 3000);
+        }, 1000);
     },[])
-    console.log(props)
     return (
         <View style={styles.container}>
             <Text style={styles.textStyle}>MyVahan</Text>

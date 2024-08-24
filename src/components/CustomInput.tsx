@@ -45,7 +45,6 @@ const CustomInput = ({
                         secureTextEntry={secureTextEntry}
                         keyboardType={keyboardType}
                         style={{marginVertical: 8}}
-
                     />
                     {error && (<Text style={{ color: Colors.red }}>{error?.message ? error?.message : `Error in ${name} field.`}</Text>)}
                 </>
