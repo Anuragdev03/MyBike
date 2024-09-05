@@ -5,5 +5,6 @@ export const screenNames = {
     dashboard: "Dashboard",
     serviceDetails: "ServiceDetails",
     main: "Main",
-    addEditServiceDetails: "AddEditServiceDetails"
+    addEditServiceDetails: "AddEditServiceDetails",
+    ViewServiceDetail: "ViewServiceDetails"
 }

@@ -12,6 +12,7 @@ import { Realm } from '@realm/react'
 import { VehiclesRecordRealmContext } from "../../modals/index";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { screenNames } from "../../../screenNames";
+import formatDate from "../../helpers/utils";
 
 const { useRealm } = VehiclesRecordRealmContext;
 
@@ -22,6 +23,16 @@ interface Props {
 
 interface VehicleData {
     _id: string
+}
+
+interface ServiceRecord {
+    _id: string;
+    currentKm: string;
+    nextService: Date;
+    otherDetails: string;
+    serviceDate: Date;
+    serviceStation: string;
+    serviceCost: string;
 }
 
 export default function AddEditServiceDetails(props: Props) {
@@ -36,13 +47,38 @@ export default function AddEditServiceDetails(props: Props) {
     const [nextServiceLabel, setNextServiceLabel] = useState("Next expected service");
     const [isNextService, setIsNextService] = useState(false);
 
-    const { control, handleSubmit } = useForm();
+    const [editData, setEditData] = useState<ServiceRecord | null>(null)
+
+    const { control, handleSubmit, setValue } = useForm();
 
     const title = props.route.params.title ?? "Add Service Detail";
+    const isEdit = props.route.params?.isEdit === "true" ?? false;
 
     useEffect(() => {
-        retriveVehicleData()
+        retriveVehicleData();
+        updateStateData()
     }, [])
+
+    function updateStateData() {
+        if (!isEdit) return;
+        try {
+            const data = props.route.params?.data;
+            const parsedData = JSON.parse(data) as ServiceRecord;
+            setEditData(parsedData);
+            setValue("serviceStation", parsedData.serviceStation);
+            setValue("serviceCost", parsedData.serviceCost);
+            setValue("currentKm", parsedData.currentKm);
+            setValue("other", parsedData.otherDetails);
+            setServiceDate(new Date(parsedData.serviceDate));
+            setNextService(new Date(parsedData.nextService));
+
+            setServiceDateLabel(formatDate(new Date(parsedData.serviceDate)));
+            setNextServiceLabel(formatDate(new Date(parsedData.nextService)))
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
     async function retriveVehicleData() {
         let data = await AsyncStorage.getItem("selectedVehicle")
@@ -155,7 +191,7 @@ export default function AddEditServiceDetails(props: Props) {
                     label="Other Details"
                 />
 
-                <View style={{ display: "flex", flexDirection: "row", gap: 8, justifyContent: "center" }}>
+                {!isEdit ? <View style={{ display: "flex", flexDirection: "row", gap: 8, justifyContent: "center" }}>
                     <CustomButton
                         text="Cancel"
                         onPress={handleBack}
@@ -167,7 +203,20 @@ export default function AddEditServiceDetails(props: Props) {
                         onPress={handleSubmit(createRecord)}
                         type="primary"
                     />
-                </View>
+                </View> :
+                    <View style={{ display: "flex", flexDirection: "row", gap: 8, justifyContent: "center" }}>
+                        <CustomButton
+                            text="Cancel"
+                            onPress={handleBack}
+                            type="secondary"
+                        />
+
+                        <CustomButton
+                            text="Edit"
+                            onPress={handleSubmit(createRecord)}
+                            type="primary"
+                        />
+                    </View>}
             </ScrollView>
         </SafeAreaView>
     )

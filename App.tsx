@@ -11,7 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-
+import Toast from 'react-native-toast-message';
 import { screenNames } from './screenNames';
 import { Colors } from './src/helpers/constants';
 import Ionicons from "react-native-vector-icons/Ionicons"
@@ -25,6 +25,7 @@ import AddVehicleForm from './src/screens/AddVehicles/AddVehicleForm';
 import Dashboard from './src/screens/Dashboard';
 import ServiceDetails from './src/screens/ServiceDetails';
 import AddEditServiceDetails from './src/screens/ServiceDetails/AddEditServiceDetail';
+import ViewServiceDetail from './src/screens/ServiceDetails/ViewServiceDetail';
 
 //Navigators
 const Tab = createBottomTabNavigator();
@@ -131,6 +132,12 @@ function App(): React.JSX.Element {
               component={AddEditServiceDetails}
               options={{ headerShown: false }}
             />
+
+            <Stack.Screen
+              name={screenNames.ViewServiceDetail}
+              component={ViewServiceDetail}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </RealmProvider>
@@ -138,6 +145,8 @@ function App(): React.JSX.Element {
         barStyle={'light-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
+
+      <Toast />
 
     </SafeAreaProvider>
   );

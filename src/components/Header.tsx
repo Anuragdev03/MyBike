@@ -27,7 +27,7 @@ export default function Header(props: Props) {
 
 const styles = StyleSheet.create({
     container: {
-        height: 100,
+        height: 85,
         backgroundColor: Colors.primary,
     },
     textStyle: {
