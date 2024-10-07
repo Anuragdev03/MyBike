@@ -64,6 +64,10 @@ export default function ViewServiceDetail(props: Props) {
             realm.write(() => {
                 realm.delete(realm.objectForPrimaryKey("ServiceData", id))
             })
+            Toast.show({
+                type: "success",
+                text1: "Record deleted successfully"
+            })
             props.navigation.navigate(screenNames.serviceDetails)
         } catch (err) {
             console.log(err)

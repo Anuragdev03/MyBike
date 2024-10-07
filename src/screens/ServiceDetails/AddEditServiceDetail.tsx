@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
 import CustomButton from "../../components/Button";
-import { Realm } from '@realm/react'
+import { Realm, useObject } from '@realm/react'
 import { VehiclesRecordRealmContext } from "../../modals/index";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { screenNames } from "../../../screenNames";
 import formatDate from "../../helpers/utils";
+import Toast from "react-native-toast-message";
 
 const { useRealm } = VehiclesRecordRealmContext;
 
@@ -136,10 +137,70 @@ export default function AddEditServiceDetails(props: Props) {
                     nextService: nextService
                 })
             })
+            updateTotalCost(serviceCost);
         } catch (err) {
             console.log(err)
         }
         props.navigation.navigate(screenNames.serviceDetails)
+    }
+
+    function editRecord(data: Record<string, string>) {
+        if (!vehicleData) return;
+        const { serviceStation, serviceCost, currentKm, other } = data;
+
+        try {
+            const id = new Realm.BSON.ObjectId(editData?._id)
+            realm.write(() => {
+                const record = realm.objectForPrimaryKey("ServiceData", id)
+                if(record) {
+                    record.updatedAt = new Date();
+                    if(currentKm) record.currentKm = currentKm;
+                    if(serviceStation) record.serviceStation = serviceStation;
+                    if(serviceCost) record.serviceCost = serviceCost;
+                    if(other) record.otherDetails = other;
+                    if(serviceDate) record.serviceDate = serviceDate;
+                    if(nextService) record.nextService = nextService
+                }
+            })
+            Toast.show({
+                type: "success",
+                text1: "Record updated successfully"
+            })
+            props.navigation.navigate(screenNames.serviceDetails)
+        } catch (err) {
+            console.log(err)
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Something Went Wrong!"
+            })
+        }
+    }
+
+    async function updateTotalCost(amount: string) {
+        const vehicleData = await AsyncStorage.getItem("selectedVehicle");
+        if (!vehicleData) return
+        const parsedData = JSON.parse(vehicleData);
+        const vehicleID = parsedData?._id;
+        const totalCost = realm.objects("TotalCost").filtered(`vehicleId =='${parsedData._id}'`)
+
+        if(totalCost.length) {
+
+        } else {
+            try {
+                realm.write(() => {
+                    realm.create("TotalCost", {
+                        _id: new Realm.BSON.ObjectId(),
+                        vehicleId: vehicleID,
+                        totalCost: amount,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    })
+                })
+            } catch (err) {
+                console.log(err)
+            }
+        }
     }
 
     return (
@@ -213,7 +274,7 @@ export default function AddEditServiceDetails(props: Props) {
 
                         <CustomButton
                             text="Edit"
-                            onPress={handleSubmit(createRecord)}
+                            onPress={handleSubmit(editRecord)}
                             type="primary"
                         />
                     </View>}

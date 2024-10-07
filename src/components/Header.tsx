@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         fontSize: 22,
-        fontFamily: fontFamily.nunitoBold,
+        fontFamily: fontFamily.nunitoLight,
         color: Colors.white,
     },
     backIcon: {

@@ -11,5 +11,12 @@ export const fontFamily = {
     nunitoBold: "Nunito-Bold",
     nunitoLight: "Nunito-Light",
     nunitoMedium: "Nunito-Medium",
-    nunitoRegular: "Nunito-Regular"
+    nunitoRegular: "Nunito-Regular",
+
+    poppinsLight: "Poppins-Light",
+    poppinsBold: "Poppins-Bold",
+    poppinsMedium: "Poppins-Medium",
+    poppinsThin: "Poppins-Thin",
+    poppinsSemiBold: "Poppins-SemiBold",
+    poppinsRegular: "Poppins-Regular"
 }
