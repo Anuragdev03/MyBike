@@ -26,17 +26,14 @@ interface VehicleData {
     _id: string
 }
 
-interface ServiceRecord {
+interface RecordData {
     _id: string;
-    currentKm: string;
-    nextService: Date;
+    cost: string;
+    productDetail: string;
     otherDetails: string;
-    serviceDate: Date;
-    serviceStation: string;
-    serviceCost: string;
 }
 
-export default function AddEditServiceDetails(props: Props) {
+export default function AddEditDetails(props: Props) {
     const realm = useRealm()
     const [isServiceDate, setIsServiceDate] = useState(false);
     const [serviceDate, setServiceDate] = useState(new Date());
@@ -48,7 +45,7 @@ export default function AddEditServiceDetails(props: Props) {
     const [nextServiceLabel, setNextServiceLabel] = useState("Next expected service");
     const [isNextService, setIsNextService] = useState(false);
 
-    const [editData, setEditData] = useState<ServiceRecord | null>(null)
+    const [editData, setEditData] = useState<RecordData | null>(null)
 
     const { control, handleSubmit, setValue } = useForm();
 
@@ -65,17 +62,11 @@ export default function AddEditServiceDetails(props: Props) {
         if (!isEdit) return;
         try {
             const data = props.route.params?.data;
-            const parsedData = JSON.parse(data) as ServiceRecord;
+            const parsedData = JSON.parse(data) as RecordData;
             setEditData(parsedData);
-            setValue("serviceStation", parsedData.serviceStation);
-            setValue("serviceCost", parsedData.serviceCost);
-            setValue("currentKm", parsedData.currentKm);
-            setValue("other", parsedData.otherDetails);
-            setServiceDate(new Date(parsedData.serviceDate));
-            setNextService(new Date(parsedData.nextService));
-
-            setServiceDateLabel(formatDate(new Date(parsedData.serviceDate)));
-            setNextServiceLabel(formatDate(new Date(parsedData.nextService)))
+            setValue("cost", parsedData.cost);
+            setValue("productDetail", parsedData.productDetail);
+            setValue("other", parsedData.otherDetails)
         } catch (err) {
             console.log(err)
         }
@@ -121,24 +112,21 @@ export default function AddEditServiceDetails(props: Props) {
     function createRecord(data: Record<string, string>) {
         if (!vehicleData) return;
 
-        const { serviceStation, serviceCost, currentKm, other } = data;
+        const { cost, other, productDetail } = data;
 
         // DB write
         try {
             realm.write(() => {
-                realm.create("ServiceData", {
+                realm.create("OtherService", {
                     _id: new Realm.BSON.ObjectId(),
                     createdAt: new Date(),
                     vehicleId: vehicleData?._id,
-                    currentKm: currentKm,
-                    serviceStation: serviceStation,
-                    serviceCost: serviceCost,
+                    cost: cost,
                     otherDetails: other,
-                    serviceDate: serviceDate,
-                    nextService: nextService
+                    productDetail: productDetail
                 })
             })
-            props.navigation.navigate(screenNames.serviceDetails)
+            props.navigation.navigate(screenNames.otherService)
         } catch (err) {
             console.log(err)
             Toast.show({
@@ -151,27 +139,24 @@ export default function AddEditServiceDetails(props: Props) {
 
     function editRecord(data: Record<string, string>) {
         if (!vehicleData) return;
-        const { serviceStation, serviceCost, currentKm, other } = data;
+        const { cost, other, productDetail } = data;
 
         try {
             const id = new Realm.BSON.ObjectId(editData?._id)
             realm.write(() => {
-                const record = realm.objectForPrimaryKey("ServiceData", id)
+                const record = realm.objectForPrimaryKey("OtherService", id)
                 if(record) {
                     record.updatedAt = new Date();
-                    if(currentKm) record.currentKm = currentKm;
-                    if(serviceStation) record.serviceStation = serviceStation;
-                    if(serviceCost) record.serviceCost = serviceCost;
                     if(other) record.otherDetails = other;
-                    if(serviceDate) record.serviceDate = serviceDate;
-                    if(nextService) record.nextService = nextService
+                    if(cost) record.cost = cost;
+                    if(productDetail) record.productDetail = productDetail
                 }
             })
             Toast.show({
                 type: "success",
                 text1: "Record updated successfully"
             })
-            props.navigation.navigate(screenNames.serviceDetails)
+            props.navigation.navigate(screenNames.otherService)
         } catch (err) {
             console.log(err)
             Toast.show({
@@ -186,42 +171,18 @@ export default function AddEditServiceDetails(props: Props) {
         <SafeAreaView style={{ flex: 1 }}>
             <Header title={title} showBackIcon onBackPress={handleBack} />
             <ScrollView style={styles.container}>
+
                 <CustomInput
                     control={control}
-                    name="serviceStation"
-                    label="Service Station/place/name"
-                    rules={{ required: "Service station details required" }}
-                />
-
-                <DatePicker
-                    isOpen={isServiceDate}
-                    handleChange={handleDatePicker}
-                    handleDateChange={getDatePickerValue}
-                    value={serviceDate}
-                    labelValue={serviceDateLabel}
+                    name="productDetail"
+                    label="Product Detail/Parts detail"
                 />
 
                 <CustomInput
                     control={control}
-                    name="serviceCost"
-                    label="Service Cost"
-                    rules={{ required: "Service cost required" }}
-                    keyboardType="numeric"
-                />
-
-                <DatePicker
-                    isOpen={isNextService}
-                    handleChange={handleNextService}
-                    handleDateChange={getNextServiceValue}
-                    value={nextService}
-                    labelValue={nextServiceLabel}
-                    minDate={new Date()}
-                />
-
-                <CustomInput
-                    control={control}
-                    name="currentKm"
-                    label="Current Odometer reading"
+                    name="cost"
+                    label="Cost"
+                    rules={{ required: "Cost is required field" }}
                     keyboardType="numeric"
                 />
 

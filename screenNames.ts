@@ -1,3 +1,4 @@
+
 export const screenNames = {
     splashScreen: "Splash",
     addVehicleScreen: "AddVehicle",
@@ -6,5 +7,9 @@ export const screenNames = {
     serviceDetails: "ServiceDetails",
     main: "Main",
     addEditServiceDetails: "AddEditServiceDetails",
-    ViewServiceDetail: "ViewServiceDetails"
+    ViewServiceDetail: "ViewServiceDetails",
+    otherService: "OtherService",
+    addEditDetails: "AddEditDetails",
+    viewDetails: "ViewDetails",
+    settings: "Settings"
 }

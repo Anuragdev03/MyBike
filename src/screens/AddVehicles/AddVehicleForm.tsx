@@ -61,6 +61,7 @@ export default function AddVehicleForm(props: Props) {
                 <CustomInput
                     label="Vehicle Name"
                     name="vehicleName"
+                    placeholder="Vehicle Name"
                     control={control}
                     rules={{ required: "Vehicle name is required" }}
                 />
@@ -68,6 +69,7 @@ export default function AddVehicleForm(props: Props) {
                 <CustomInput
                     label="Brand Name"
                     name="brandName"
+                    placeholder="Brand Name"
                     control={control}
                     rules={{ required: "Vehicle name is required" }}
                 />

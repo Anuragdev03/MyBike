@@ -1,15 +1,14 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, Pressable } from "react-native";
 import Header from "../../components/Header";
 import { IconButton } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome6"
 import { Colors, fontFamily } from "../../helpers/constants";
 import { screenNames } from "../../../screenNames";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList } from "react-native";
+import { useCallback, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { VehiclesRecordRealmContext } from "../../modals";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import formatDate from "../../helpers/utils";
 
 const { useRealm } = VehiclesRecordRealmContext;
 
@@ -17,48 +16,33 @@ interface Props {
     navigation: any
 }
 
-interface VehicleData {
-    _id: string
-}
-
-interface ServiceRecord {
+interface Record {
     _id: string;
-    currentKm: string;
-    nextService: Date;
+    cost: string;
+    productDetail: string;
     otherDetails: string;
-    serviceDate: Date;
-    serviceStation: string;
 }
 
-
-export default function ServiceDetails(props: Props) {
+export default function OtherService(props:Props) {
+    const [serviceData, setServiceData] = useState<any>(null);
     const realm = useRealm();
-    const [serviceRecord, setServiceRecord] = useState<any>(null)
-    const [vehicleData, setVehicleData] = useState<VehicleData | null>(null);
 
     useFocusEffect(
         useCallback(() => {
-            retriveVehicleData()
+            fetchData()
         }, [])
     );
 
-    async function retriveVehicleData() {
+    async function fetchData() {
+        // Get vechile id
         let data = await AsyncStorage.getItem("selectedVehicle")
         if (!data) return
         const parsedData = JSON.parse(data)
-        setVehicleData(parsedData)
-        fetchServiceRecord(parsedData)
+        const records = realm.objects("OtherService").filtered(`vehicleId =='${parsedData._id}'`)
+        console.log(records)
+        setServiceData(records)
     }
 
-    function fetchServiceRecord(vehicleData: any) {
-        if (!vehicleData) return;
-        try {
-            const data = realm.objects("ServiceData").filtered(`vehicleId =='${vehicleData._id}'`)
-            setServiceRecord(data)
-        } catch (err) {
-            console.log(err)
-        }
-    }
 
     const addButton = () => (
         <View style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: 80, alignItems: "center" }}>
@@ -71,22 +55,22 @@ export default function ServiceDetails(props: Props) {
                     iconColor={Colors.white}
                     style={styles.addButton}
                     onPress={() => {
-                        props.navigation.navigate(screenNames.addEditServiceDetails, { title: "Add Service Detail" })
+                        props.navigation.navigate(screenNames.addEditDetails, { title: "Add Other service data" })
                     }}
                 />
             </View>
             <View>
-                <Text style={{ fontFamily: fontFamily.poppinsMedium }}>Add</Text>
+                <Text style={{ fontFamily: fontFamily.nunitoMedium }}>Add</Text>
             </View>
         </View>
     )
 
-    const Card = (item: ServiceRecord, index: number) => (
+    const Card = (item: Record, index: number) => (
         <View style={styles.card}>
-            <Pressable onPress={() => props.navigation.navigate(screenNames.ViewServiceDetail, {data: JSON.stringify(item)})}>
+            <Pressable onPress={() => props.navigation.navigate(screenNames.viewDetails, {data: JSON.stringify(item)})}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                        <Text style={styles.cardText}>{index + ") " + item?.serviceStation + " - " + formatDate(item.serviceDate)} Km</Text>
+                        <Text style={styles.cardText}>{index + ") " + item?.productDetail}</Text>
                     </View>
                     <IconButton
                         icon={({ color, size }) => (
@@ -100,20 +84,22 @@ export default function ServiceDetails(props: Props) {
             </Pressable>
         </View>
     )
+
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <Header title="Service Details" showBackIcon={false} />
+        <SafeAreaView  style={{ flex: 1 }}>
+            <Header title="Other Services" showBackIcon={false} />
+
             <View style={styles.container}>
                 <FlatList
-                    data={serviceRecord}
+                    data={serviceData}
                     keyExtractor={item => item._id}
                     renderItem={(({ item, index }) => Card(item, index + 1))}
                 />
             </View>
-            <View style={{ position: "absolute", right: 10, bottom: 0 }}>
-                {addButton()}
-            </View>
 
+            <View style={{ position: "absolute", right: 10, bottom: 0 }}>
+                {addButton()}   
+            </View>
         </SafeAreaView>
     )
 }
@@ -124,18 +110,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         position: "relative"
     },
-
     addButton: {
         backgroundColor: Colors.primary,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 8,
     },
-
-    arrowRight: {
-        backgroundColor: Colors.primary,
-    },
-
     card: {
         backgroundColor: Colors.primary,
         height: 50,
@@ -145,15 +125,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 8,
     },
-
     cardText: {
         color: Colors.white,
         fontWeight: "500",
         fontSize: 16,
         fontFamily: fontFamily.poppinsLight
     },
-    date: {
-        color: Colors.white,
-        maxWidth: 150
+    arrowRight: {
+        backgroundColor: Colors.primary,
     }
 })

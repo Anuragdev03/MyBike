@@ -35,7 +35,7 @@ const CustomInput = ({
                 <>
                     <TextInput
                         label={label}
-                        placeholder={placeholder}
+                        placeholder={placeholder || label}
                         selectionColor={Colors.primary}
                         underlineColor={Colors.primary}
                         mode="outlined"

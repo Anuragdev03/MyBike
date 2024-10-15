@@ -26,6 +26,10 @@ import Dashboard from './src/screens/Dashboard';
 import ServiceDetails from './src/screens/ServiceDetails';
 import AddEditServiceDetails from './src/screens/ServiceDetails/AddEditServiceDetail';
 import ViewServiceDetail from './src/screens/ServiceDetails/ViewServiceDetail';
+import OtherService from './src/screens/OtherService';
+import AddEditDetails from './src/screens/OtherService/AddEditDetails';
+import ViewDetails from './src/screens/OtherService/ViewDetails';
+import Settings from './src/screens/settings';
 
 //Navigators
 const Tab = createBottomTabNavigator();
@@ -43,7 +47,7 @@ function BottomTabNavigator() {
 
           if (routeName === screenNames.dashboard) {
             iconName = focused ? "analytics-sharp" : "analytics-outline";
-          } else if (routeName === screenNames.serviceDetails) {
+          } else if (routeName === screenNames.serviceDetails || routeName === screenNames.otherService) {
             iconName = focused ? "settings-sharp" : "settings-outline";
           }
 
@@ -66,6 +70,8 @@ function BottomTabNavigator() {
             name = "Dashboard"
           } else if(route.name === screenNames.serviceDetails) {
             name = "Service Details"
+          } else if(route.name === screenNames.otherService) {
+            name = "Other Services"
           }
           return <Text style={{fontSize: 12, fontWeight: "500", color: color}}>{name}</Text>
         }
@@ -78,6 +84,8 @@ function BottomTabNavigator() {
       {/* Service details screen */}
       <Tab.Screen name={screenNames.serviceDetails} component={ServiceDetails} />
 
+      {/* Other service details */} 
+      <Tab.Screen name={screenNames.otherService} component={OtherService} />
     </Tab.Navigator>
   )
 }
@@ -136,6 +144,24 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name={screenNames.ViewServiceDetail}
               component={ViewServiceDetail}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name={screenNames.addEditDetails}
+              component={AddEditDetails}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name={screenNames.viewDetails}
+              component={ViewDetails}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name={screenNames.settings}
+              component={Settings}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

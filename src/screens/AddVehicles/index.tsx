@@ -68,6 +68,27 @@ export default function AddVehicles(props: Props) {
         </View>
     )
 
+    const settingsBtn = () => (
+        <View style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: 80, alignItems: "center" }}>
+            <View>
+                <IconButton
+                    icon={({ color, size }) => (
+                        <FontAwesome name="screwdriver-wrench" color={color} size={size} />
+                    )}
+                    size={30}
+                    iconColor={Colors.primary}
+                    style={styles.addButton}
+                    onPress={() => {
+                        props.navigation.navigate(screenNames.settings)
+                    }}
+                />
+            </View>
+            <View>
+                <Text style={{ color: "#fff", fontFamily: fontFamily.nunitoMedium }}>Settings</Text>
+            </View>
+        </View>
+    )
+
     const vehicleButton = (type: VehicleType, name: string, data:any) => {
         let icon = type === "Car" ? carIcon : bikeIcon;
 
@@ -111,6 +132,9 @@ export default function AddVehicles(props: Props) {
             </View>
             <View style={{ position: "absolute", bottom: 20, right: 20 }}>
                 {addButton()}
+            </View>
+            <View style={{ position: "absolute", bottom: 20, right: 80 }}>
+                {settingsBtn()}
             </View>
         </SafeAreaView>
     )
